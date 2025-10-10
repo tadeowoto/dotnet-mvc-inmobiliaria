@@ -8,6 +8,7 @@ namespace inmobiliaria.Models
 {
     public class Propietario
     {
+        [Key]
         public int id_propietario { get; set; }
 
         [Required(ErrorMessage = "El DNI es requerido")] // Indica que este campo es obligatorio
