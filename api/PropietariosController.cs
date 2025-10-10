@@ -42,6 +42,24 @@ namespace inmobiliaria.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("api/Propietarios/{id}")]
+        public IActionResult Get(int id)
+        {
+            try
+            {
+                var propietario = contexto.Propietarios.Find(id);
+                if (propietario == null)
+                {
+                    return NotFound();
+                }
+                return Ok(propietario);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 
 }

@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace inmobiliaria.Models
 {
+    [Table("propietario")]
     public class Propietario
     {
         [Key]

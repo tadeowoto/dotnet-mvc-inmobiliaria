@@ -9,6 +9,7 @@ namespace inmobiliaria.Models
 {
     public class Inmueble
     {
+        [Key]
         public int id_inmueble { get; set; }
 
         [Required(ErrorMessage = "La dirección es requerida")]
@@ -40,7 +41,7 @@ namespace inmobiliaria.Models
         public TipoInmueble? tipoInmueble { get; set; }
         public Propietario? propietario_inmueble { get; set; }
         public string? portada_inmueble { get; set; }
-        public IList<Imagen> imagenes_inmueble { get; set; } = new List<Imagen>();
+        //public IList<Imagen> imagenes_inmueble { get; set; } = new List<Imagen>();
 
         //borrado
         public bool estaActivoInmueble { get; set; } = true;
