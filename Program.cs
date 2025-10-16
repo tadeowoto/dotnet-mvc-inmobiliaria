@@ -23,6 +23,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Home";
         //options.ExpireTimeSpan = TimeSpan.FromMinutes(5);//Tiempo de expiración
     });
+// configurar JWT
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Administrador", policy => policy.RequireRole("Administrador"));
