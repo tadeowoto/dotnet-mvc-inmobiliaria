@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace inmobiliaria.Models
 {
+    [Table("inmueble")]
     public class Inmueble
     {
         [Key]
+        [Column("id_inmueble")]
         public int id_inmueble { get; set; }
 
         [Required(ErrorMessage = "La dirección es requerida")]
@@ -23,29 +25,42 @@ namespace inmobiliaria.Models
 
         [Required(ErrorMessage = "La superficie es requerida")]
         [Range(1, 10000, ErrorMessage = "Debe ingresar una superficie válida")]
+        [NotMapped]
         public int superficie_inmueble { get; set; }
         [Required(ErrorMessage = "La latitud es requerida")]
         [Range(typeof(decimal), "-90", "90", ErrorMessage = "La latitud debe estar entre -90 y 90")]
         [Column(TypeName = "decimal(9,6)")]
+        [NotMapped]
         public decimal lat_inmueble { get; set; }
         [Required(ErrorMessage = "La longitud es requerida")]
         [Range(typeof(decimal), "-180", "180", ErrorMessage = "La longitud debe estar entre -180 y 180")]
         [Column(TypeName = "decimal(9,6)")]
+        [NotMapped]
         public decimal long_inmueble { get; set; }
+
+        [ForeignKey("propietario_inmueble")]
+        [Column("id_propietario")]
         public int PropietarioId { get; set; }
 
         [Required(ErrorMessage = "El uso del inmueble es requerido")]
         public String uso_inmueble { get; set; }
         [Required(ErrorMessage = "El tipo de inmueble es requerido")]
+        [NotMapped]
         public int tipo_inmueble { get; set; }
+        [NotMapped]
         public TipoInmueble? tipoInmueble { get; set; }
+
+
         public Propietario? propietario_inmueble { get; set; }
+        [NotMapped]
         public string? portada_inmueble { get; set; }
         //public IList<Imagen> imagenes_inmueble { get; set; } = new List<Imagen>();
 
         //borrado
+        [NotMapped]
         public bool estaActivoInmueble { get; set; } = true;
         //disponibilidad
+        [Column("disponible_inmueble")]
         public bool disponibilidad_inmueble { get; set; } = true;
 
 

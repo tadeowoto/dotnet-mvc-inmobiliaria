@@ -9,6 +9,7 @@ namespace inmobiliaria.Models
         {
 
         }
+        public DbSet<Inmueble> Inmuebles { get; set; }
         public DbSet<Propietario> Propietarios { get; set; }
     }
 }

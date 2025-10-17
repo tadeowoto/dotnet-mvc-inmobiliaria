@@ -143,7 +143,26 @@ namespace inmobiliaria.Api.Controllers
             }
         }
 
+        [HttpGet("/api/Propietarios/inmuebles")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult getInmueblesPropietario()
+        {
+            try
+            {
+                // traigo el id de las claims del usuario logueado
+                var id = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
+                //busco en la bd todos los inmuebles que tengan ese id de propietario
+                var inmuebles = contexto.Inmuebles
+                    .Where(i => i.PropietarioId == id)
+                    .ToList();
 
+                return Ok(inmuebles);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 
