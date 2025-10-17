@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 
 namespace inmobiliaria.Api.Controllers
@@ -121,6 +123,30 @@ namespace inmobiliaria.Api.Controllers
 
         }
 
+        [HttpGet("api/Propietarios/logged")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult getPropietarioLogged()
+        {
+            try
+            {
+                var id = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
+                var propietario = contexto.Propietarios.Find(id);
+                if (propietario == null)
+                {
+                    return NotFound("Propietario no encontrado");
+                }
+                return Ok(propietario);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
     }
+
+
 
 }
