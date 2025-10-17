@@ -38,7 +38,6 @@ namespace inmobiliaria.Models
         [NotMapped]
         public decimal long_inmueble { get; set; }
 
-        [ForeignKey("propietario_inmueble")]
         [Column("id_propietario")]
         public int PropietarioId { get; set; }
 

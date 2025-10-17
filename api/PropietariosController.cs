@@ -12,9 +12,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace inmobiliaria.Api.Controllers
 {
-
-
-
     public class PropietariosController : ControllerBase
     {
 
@@ -129,21 +126,17 @@ namespace inmobiliaria.Api.Controllers
         {
             try
             {
-                Console.WriteLine("Cambio de contraseña solicitado");
                 //Busco el propietario logueado
                 var id = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
                 var propietario = contexto.Propietarios.Find(id);
                 if (propietario == null)
                 {
-                    Console.WriteLine("Propietario no encontrado");
                     return NotFound("Propietario no encontrado");
-
                 }
                 //Hasheo la contraseña vieja y la comparo con la que tiene el propietario en la bd
                 String hashedOldPassword = service.HashPassword(data.OldPassword);
                 if (propietario.password_propietario != hashedOldPassword)
                 {
-                    Console.WriteLine("La contraseña actual es incorrecta");
                     return BadRequest("La contraseña actual es incorrecta");
                 }
                 //Si ya esta aca, es decir que la contraseña vieja es correcta
@@ -157,7 +150,6 @@ namespace inmobiliaria.Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
                 return BadRequest(ex.Message);
             }
 

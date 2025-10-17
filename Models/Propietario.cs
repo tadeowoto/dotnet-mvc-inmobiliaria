@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace inmobiliaria.Models
 {
@@ -10,27 +11,37 @@ namespace inmobiliaria.Models
     public class Propietario
     {
         [Key]
+        [JsonPropertyName("idPropietario")]
         public int id_propietario { get; set; }
 
         [Required(ErrorMessage = "El DNI es requerido")] // Indica que este campo es obligatorio
+        [JsonPropertyName("dni")]
         public int? dni_propietario { get; set; }
 
         [Required(ErrorMessage = "El nombre es requerido")] // Campo obligatorio
+        [JsonPropertyName("nombre")]
         public string nombre_propietario { get; set; }
 
+        [Column("clave")]
+        [JsonPropertyName("clave")]
         public string password_propietario { get; set; }
 
         [Required(ErrorMessage = "El apellido es requerido")] // Campo obligatorio
+        [JsonPropertyName("apellido")]
         public string apellido_propietario { get; set; }
 
         [Required(ErrorMessage = "El email es requerido")] // Campo obligatorio
         [EmailAddress(ErrorMessage = "El formato del email no es válido")] // Valida que sea un formato de email válido
+        [JsonPropertyName("email")]
         public string email_propietario { get; set; }
 
         [Required(ErrorMessage = "El teléfono es requerido")] // Campo obligatorio
+        [JsonPropertyName("telefono")]
         public string telefono_propietario { get; set; }
 
         // Esta es la collection de inmuebles asociados al propietario
+        [NotMapped]
+        [JsonIgnore]
         public ICollection<Inmueble> Inmuebles { get; set; }
 
 
