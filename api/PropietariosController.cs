@@ -123,6 +123,50 @@ namespace inmobiliaria.Api.Controllers
 
         }
 
+        [HttpPut("api/Propietarios/changePassword")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult ChangePassword([FromForm] ChangePasswordData data)
+        {
+            try
+            {
+                Console.WriteLine("Cambio de contraseña solicitado");
+                //Busco el propietario logueado
+                var id = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
+                var propietario = contexto.Propietarios.Find(id);
+                if (propietario == null)
+                {
+                    Console.WriteLine("Propietario no encontrado");
+                    return NotFound("Propietario no encontrado");
+
+                }
+                //Hasheo la contraseña vieja y la comparo con la que tiene el propietario en la bd
+                String hashedOldPassword = service.HashPassword(data.OldPassword);
+                if (propietario.password_propietario != hashedOldPassword)
+                {
+                    Console.WriteLine("La contraseña actual es incorrecta");
+                    return BadRequest("La contraseña actual es incorrecta");
+                }
+                //Si ya esta aca, es decir que la contraseña vieja es correcta
+                //Hasheo la nueva contraseña y la actualizo en la bd
+                Console.WriteLine("La contraseña actual es correcta");
+                String hashedNewPassword = service.HashPassword(data.NewPassword);
+                propietario.password_propietario = hashedNewPassword;
+                contexto.Propietarios.Update(propietario);
+                contexto.SaveChanges();
+                return Ok("Contraseña actualizada correctamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+
+
+
+
         [HttpGet("api/Propietarios/logged")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult getPropietarioLogged()
