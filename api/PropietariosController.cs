@@ -1,6 +1,12 @@
 
 using inmobiliaria.Models;
 using Microsoft.AspNetCore.Mvc;
+using inmobiliaria.lib;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
 
 namespace inmobiliaria.Api.Controllers
 {
@@ -11,10 +17,15 @@ namespace inmobiliaria.Api.Controllers
     {
 
         private readonly DataContext contexto;
+        private readonly HashPasswordService service;
+        private readonly IConfiguration _config;
 
-        public PropietariosController(DataContext context)
+        public PropietariosController(DataContext context, IConfiguration config, HashPasswordService service)
         {
             this.contexto = context;
+            this.service = service;
+            _config = config;
+
         }
 
         [HttpGet]
@@ -60,6 +71,56 @@ namespace inmobiliaria.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+        //metodos reales
+
+        [HttpPost("api/Propietarios/login")]
+        public IActionResult Login([FromForm] LoginData data)
+        {
+            try
+            {
+                String hashedPassword = service.HashPassword(data.password);
+                var propietario = contexto.Propietarios
+                    .FirstOrDefault(p => p.email_propietario == data.email);
+
+                if (propietario != null && propietario.password_propietario == hashedPassword)
+                {
+                    var key = new SymmetricSecurityKey(
+                     Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+                    );
+                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                    var claims = new[]
+                    //info que se va a guardar en el token
+                    {
+                        new Claim("Id", propietario.id_propietario.ToString()),
+                        new Claim("FullName", propietario.nombre_propietario + " " + propietario.apellido_propietario),
+                        new Claim("Email", propietario.email_propietario)
+                    };
+
+                    var token = new JwtSecurityToken(
+                        issuer: _config["Jwt:Issuer"],
+                        audience: _config["Jwt:Audience"],
+                        claims: claims,
+                        expires: DateTime.Now.AddMinutes(90),
+                        signingCredentials: creds
+                    );
+                    return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                }
+                else
+                {
+                    return BadRequest("Usuario o contraseña incorrectos");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
     }
 
 }

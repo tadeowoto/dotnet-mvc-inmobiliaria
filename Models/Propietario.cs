@@ -18,6 +18,8 @@ namespace inmobiliaria.Models
         [Required(ErrorMessage = "El nombre es requerido")] // Campo obligatorio
         public string nombre_propietario { get; set; }
 
+        public string password_propietario { get; set; }
+
         [Required(ErrorMessage = "El apellido es requerido")] // Campo obligatorio
         public string apellido_propietario { get; set; }
 

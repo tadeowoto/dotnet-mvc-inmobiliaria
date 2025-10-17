@@ -60,6 +60,7 @@ builder.Services.AddScoped<inmobiliaria.Models.RepositorioUsuario>();
 builder.Services.AddScoped<inmobiliaria.Models.RepositorioTipoInmueble>();
 builder.Services.AddScoped<inmobiliaria.Models.RepositorioAuditoria>();
 builder.Services.AddScoped<AuditoriaHelper>();
+builder.Services.AddScoped<inmobiliaria.lib.HashPasswordService>();
 
 var app = builder.Build();
 
