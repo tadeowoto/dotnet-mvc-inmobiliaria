@@ -27,52 +27,7 @@ namespace inmobiliaria.Api.Controllers
 
         }
 
-        [HttpGet]
-        [Route("api/helloworld")]
-        public IActionResult Get()
-        {
 
-            try
-            {
-                return Ok(new
-                {
-                    mensaje = "Hola mundo desde Web API",
-                    Error = false,
-                    Fecha = DateTime.Now,
-                    Propietario = new
-                    {
-                        Nombre = "Pedro",
-                        Apellido = "Picapiedra",
-                        Email = "TtT9o@example.com"
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("api/Propietarios/{id}")]
-        public IActionResult Get(int id)
-        {
-            try
-            {
-                var propietario = contexto.Propietarios.Find(id);
-                if (propietario == null)
-                {
-                    return NotFound();
-                }
-                return Ok(propietario);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-
-        //metodos reales
 
         [HttpPost("api/Propietarios/login")]
         public IActionResult Login([FromForm] LoginData data)
