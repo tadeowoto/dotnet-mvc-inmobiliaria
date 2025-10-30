@@ -10,10 +10,12 @@ namespace inmobiliaria.Api.Controllers
     public class InmueblesController : ControllerBase
     {
         private readonly DataContext contexto;
+        private readonly IWebHostEnvironment environment;
 
-        public InmueblesController(DataContext context)
+        public InmueblesController(DataContext context, IWebHostEnvironment environment)
         {
             this.contexto = context;
+            this.environment = environment;
         }
 
         [HttpGet("/api/Inmuebles/GetContratoVigente")]
@@ -84,6 +86,48 @@ namespace inmobiliaria.Api.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("/api/inmuebles/crear")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult crearInmueble([FromForm] Inmueble inmueble)
+        {
+            try
+            {
+                var id = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
+                var propietario = contexto.Propietarios.Find(id);
+                if (propietario == null)
+                {
+                    return NotFound("Propietario no encontrado");
+                }
+                inmueble.PropietarioId = id;
+                if (inmueble.foto_form != null && inmueble.foto_form.Length > 0)
+                {
+
+                    string uploadsFolder = Path.Combine(environment.WebRootPath, "uploads/inmuebles");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(inmueble.foto_form.FileName);
+                    string filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        inmueble.foto_form.CopyTo(stream);
+                    }
+
+                    // Guarda la ruta de acceso PÚBLICA
+                    inmueble.foto_inmueble = "/uploads/inmuebles/" + fileName;
+                }
+                contexto.Inmuebles.Add(inmueble);
+                contexto.SaveChanges();
+
+                return Ok(inmueble);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message + " | InnerException: " + ex.InnerException?.Message);
             }
         }
 

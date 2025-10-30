@@ -59,12 +59,9 @@ namespace inmobiliaria.Models
 
         [NotMapped]
         [JsonPropertyName("duenio")]
+        [JsonIgnore]
         public Propietario? propietario_inmueble { get; set; }
 
-        [JsonPropertyName("imagen")]
-        [NotMapped]
-        public string? portada_inmueble { get; set; }
-        //public IList<Imagen> imagenes_inmueble { get; set; } = new List<Imagen>();
 
         //borrado
         [NotMapped]
@@ -86,6 +83,15 @@ namespace inmobiliaria.Models
         [JsonPropertyName("tipo")]
         [Column("tipo_inmueble")]
         public string tipo { get; set; } = string.Empty;
+
+        [Column("foto_inmueble")]
+        [Display(Name = "Foto")]
+        public string? foto_inmueble { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Subir Foto")]
+        [JsonIgnore]
+        public IFormFile? foto_form { get; set; }
 
 
 
@@ -153,49 +159,3 @@ namespace inmobiliaria.Models
 
     };
 }
-
-/*
-{
-        "idInmueble": 1,
-        "direccion": "Belgrano 123",
-        "uso": "Residencial",
-        "tipo": "Departamento",
-        "ambientes": 4,
-        "superficie": 131,
-        "latitud": 6.0,
-        "valor": 80400.0,
-        "imagen": "Uploads\\\\avatar_4.jpg",
-        "disponible": false,
-        "longitud": 9.0,
-        "idPropietario": 3,
-        "duenio": {
-            "idPropietario": 3,
-            "nombre": "Luis Javier",
-            "apellido": "Lucero",
-            "dni": "171717",
-            "telefono": "1125254149",
-            "email": "luisprofessor@gmail.com",
-            "clave": "SQZNIpUXTSDNE2bcQ9j0TkNKhh88O20djkB0De8URow="
-        },
-        "tieneContratoVigente": false
-    },
-*/
-
-/*
-    {
-        "idInmueble": 1,
-        "direccion": "Calle Falsa 123",
-        "ambientes": 4,
-        "superficie": 0,
-        "latitud": 0,
-        "longitud": 0,
-        "idPropietario": 2,
-        "uso": "Residencial",
-        "tipo": "Casa",
-        "duenio": null,
-        "imagen": null,
-        "disponible": false,
-        "valor": 120000,
-        "tieneContratoVigente": false
-    },
-*/

@@ -32,9 +32,9 @@
                             <td>@(inmueble.propietario_inmueble?.nombre_propietario ?? "Sin dueño")</td>
                             <td>@inmueble.tipoInmueble?.descripcion</td>
                             <td>
-                                @if (!string.IsNullOrEmpty(inmueble.portada_inmueble))
+                                @if (!string.IsNullOrEmpty(inmueble.foto_inmueble))
                                 {
-                                    <img src="~/images/@inmueble.portada_inmueble" alt="Portada" class="img-thumbnail"
+                                    <img src="~/images/@inmueble.foto_inmueble" alt="Portada" class="img-thumbnail"
                                         style="width:80px;height:auto;" />
                                 }
                                 else
