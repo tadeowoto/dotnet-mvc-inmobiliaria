@@ -29,21 +29,18 @@ namespace inmobiliaria.Models
 
         [Required(ErrorMessage = "La superficie es requerida")]
         [Range(1, 10000, ErrorMessage = "Debe ingresar una superficie válida")]
-        [NotMapped]
         [JsonPropertyName("superficie")]
-        public int superficie_inmueble { get; set; }
-        [Required(ErrorMessage = "La latitud es requerida")]
+        [Column("superficie")]
+        public int? superficie_inmueble { get; set; }
         [Range(typeof(decimal), "-90", "90", ErrorMessage = "La latitud debe estar entre -90 y 90")]
-        [Column(TypeName = "decimal(9,6)")]
-        [NotMapped]
         [JsonPropertyName("latitud")]
-        public decimal lat_inmueble { get; set; }
-        [Required(ErrorMessage = "La longitud es requerida")]
+        [Column("latitud")]
+        public decimal? lat_inmueble { get; set; }
         [Range(typeof(decimal), "-180", "180", ErrorMessage = "La longitud debe estar entre -180 y 180")]
-        [Column(TypeName = "decimal(9,6)")]
-        [NotMapped]
         [JsonPropertyName("longitud")]
-        public decimal long_inmueble { get; set; }
+        [Column("longitud")]
+
+        public decimal? long_inmueble { get; set; }
 
         [Column("id_propietario")]
         [JsonPropertyName("idPropietario")]
@@ -54,9 +51,10 @@ namespace inmobiliaria.Models
         public String uso_inmueble { get; set; }
         [Required(ErrorMessage = "El tipo de inmueble es requerido")]
         [NotMapped]
-        [JsonPropertyName("tipo")]
+        [JsonIgnore]
         public int tipo_inmueble { get; set; }
         [NotMapped]
+        [JsonIgnore]
         public TipoInmueble? tipoInmueble { get; set; }
 
         [NotMapped]
@@ -85,12 +83,16 @@ namespace inmobiliaria.Models
         [JsonPropertyName("tieneContratoVigente")]
         public bool tieneContratoVigente { get; set; } = false;
 
+        [JsonPropertyName("tipo")]
+        [Column("tipo_inmueble")]
+        public string tipo { get; set; } = string.Empty;
+
 
 
         // El error daba porque no teniamos el constructor vacio 
         public Inmueble() { }
 
-        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble)
+        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int? superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble)
         {
             this.direccion_inmueble = direccion_inmueble;
             this.ambientes_inmueble = ambientes_inmueble;
@@ -104,7 +106,7 @@ namespace inmobiliaria.Models
             this.propietario_inmueble = propietario_inmueble;
             this.tieneContratoVigente = false;
         }
-        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble, decimal precio_inmueble)
+        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int? superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble, decimal precio_inmueble)
         {
             this.direccion_inmueble = direccion_inmueble;
             this.ambientes_inmueble = ambientes_inmueble;
@@ -119,7 +121,7 @@ namespace inmobiliaria.Models
             this.precio_inmueble = precio_inmueble;
         }
 
-        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble, TipoInmueble? tipoInmueble)
+        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int? superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble, TipoInmueble? tipoInmueble)
         {
             this.direccion_inmueble = direccion_inmueble;
             this.ambientes_inmueble = ambientes_inmueble;
@@ -133,7 +135,7 @@ namespace inmobiliaria.Models
             this.propietario_inmueble = propietario_inmueble;
             this.tipoInmueble = tipoInmueble;
         }
-        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble, TipoInmueble? tipoInmueble, bool disponibilidad_inmueble)
+        public Inmueble(string? direccion_inmueble, int ambientes_inmueble, int? superficie_inmueble, decimal lat_inmueble, decimal long_inmueble, int PropietarioId, string uso_inmueble, int tipo_inmueble, Propietario? propietario_inmueble, TipoInmueble? tipoInmueble, bool disponibilidad_inmueble)
         {
             this.direccion_inmueble = direccion_inmueble;
             this.ambientes_inmueble = ambientes_inmueble;
@@ -151,3 +153,49 @@ namespace inmobiliaria.Models
 
     };
 }
+
+/*
+{
+        "idInmueble": 1,
+        "direccion": "Belgrano 123",
+        "uso": "Residencial",
+        "tipo": "Departamento",
+        "ambientes": 4,
+        "superficie": 131,
+        "latitud": 6.0,
+        "valor": 80400.0,
+        "imagen": "Uploads\\\\avatar_4.jpg",
+        "disponible": false,
+        "longitud": 9.0,
+        "idPropietario": 3,
+        "duenio": {
+            "idPropietario": 3,
+            "nombre": "Luis Javier",
+            "apellido": "Lucero",
+            "dni": "171717",
+            "telefono": "1125254149",
+            "email": "luisprofessor@gmail.com",
+            "clave": "SQZNIpUXTSDNE2bcQ9j0TkNKhh88O20djkB0De8URow="
+        },
+        "tieneContratoVigente": false
+    },
+*/
+
+/*
+    {
+        "idInmueble": 1,
+        "direccion": "Calle Falsa 123",
+        "ambientes": 4,
+        "superficie": 0,
+        "latitud": 0,
+        "longitud": 0,
+        "idPropietario": 2,
+        "uso": "Residencial",
+        "tipo": "Casa",
+        "duenio": null,
+        "imagen": null,
+        "disponible": false,
+        "valor": 120000,
+        "tieneContratoVigente": false
+    },
+*/

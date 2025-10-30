@@ -4,6 +4,7 @@ namespace inmobiliaria.Models
 {
     public class Inquilino
     {
+        [Key]
         public int id_inquilino { get; set; }
 
         [Required(ErrorMessage = "El DNI es requerido")]
