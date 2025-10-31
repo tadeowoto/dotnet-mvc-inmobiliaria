@@ -126,7 +126,16 @@ namespace inmobiliaria.Api.Controllers
                 {
                     return NotFound("Propietario no encontrado");
                 }
-                return Ok(propietario);
+                Propietario propietarioSinPassword = new Propietario
+                {
+                    id_propietario = propietario.id_propietario,
+                    dni_propietario = propietario.dni_propietario,
+                    nombre_propietario = propietario.nombre_propietario,
+                    apellido_propietario = propietario.apellido_propietario,
+                    email_propietario = propietario.email_propietario,
+                    telefono_propietario = propietario.telefono_propietario,
+                };
+                return Ok(propietarioSinPassword);
             }
             catch (Exception ex)
             {
