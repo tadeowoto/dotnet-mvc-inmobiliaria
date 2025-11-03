@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using inmobiliaria.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace inmobiliaria.Api.Controllers
 {
 
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class InmueblesController : ControllerBase
     {
         private readonly DataContext contexto;
@@ -18,8 +22,22 @@ namespace inmobiliaria.Api.Controllers
             this.environment = environment;
         }
 
+        /// <summary>
+        /// Obtiene los inmuebles del propietario logueado que tienen un contrato vigente.
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT.
+        /// </remarks>
+        /// <response code="200">Devuelve la lista de inmuebles con contrato vigente (IEnumerable&lt;Inmueble&gt;).</response>
+        /// <response code="401">No autorizado (Token JWT inválido o ausente).</response>
+        /// <response code="404">No se encontraron inmuebles con contrato vigente o el propietario no existe.</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
         [HttpGet("/api/Inmuebles/GetContratoVigente")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Inmueble>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult getInmueblesConContratoVigente()
         {
             try
@@ -52,14 +70,28 @@ namespace inmobiliaria.Api.Controllers
         }
 
 
+        /// <summary>
+        /// Actualiza el estado de disponibilidad de un inmueble.
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT. Solo el propietario puede modificar su inmueble.
+        /// Espera un JSON con el id_inmueble y la disponibilidad_inmueble.
+        /// </remarks>
+        /// <param name="inmuebleActualizado">Objeto JSON con los datos del inmueble (importa `id_inmueble` y `disponibilidad_inmueble`).</param>
+        /// <response code="200">Actualización exitosa (devuelve un string).</response>
+        /// <response code="401">No autorizado (el inmueble no pertenece al propietario o el token es inválido).</response>
+        /// <response code="404">Propietario o inmueble no encontrado.</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
         [HttpPut("/api/inmuebles/actualizar")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult actualizarDisponibilidad([FromBody] Inmueble inmuebleActualizado)
         {
             try
             {
-                Console.WriteLine("Disponibilidad a actualizar: " + inmuebleActualizado.disponibilidad_inmueble);
-
                 var id = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
                 var propietario = contexto.Propietarios.Find(id);
                 if (propietario == null)
@@ -89,8 +121,25 @@ namespace inmobiliaria.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea un nuevo inmueble para el propietario logueado (incluye foto).
+        /// </summary>
+        /// <remarks>
+        /// Requiere JWT. Este endpoint espera `multipart/form-data` para poder subir la foto.
+        /// Enviar todos los campos del inmueble como form-data y el archivo de imagen en el campo 'foto_form'.
+        /// </remarks>
+        /// <param name="inmueble">Datos del inmueble enviados como form-data.</param>
+        /// <response code="200">Inmueble creado exitosamente (devuelve el objeto `Inmueble` creado).</response>
+        /// <response code="401">No autorizado (Token JWT inválido o ausente).</response>
+        /// <response code="404">Propietario no encontrado.</response>
+        /// <response code="400">Error en la solicitud (ej. 'Out of range' en la BD, o datos inválidos).</response>
         [HttpPost("/api/inmuebles/crear")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Inmueble))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult crearInmueble([FromForm] Inmueble inmueble)
         {
             try
@@ -132,8 +181,25 @@ namespace inmobiliaria.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene un inmueble específico por su ID.
+        /// </summary>
+        /// <remarks>
+        /// Requiere JWT. Solo el propietario del inmueble puede verlo.
+        /// </remarks>
+        /// <param name="id_inmueble">El ID (int) del inmueble a consultar.</param>
+        /// <response code="200">Devuelve el objeto `Inmueble`.</response>
+        /// <response code="401">No autorizado (Token JWT inválido o ausente).</response>
+        /// <response code="403">Acceso prohibido (el inmueble no pertenece al propietario).</response>
+        /// <response code="404">Propietario o inmueble no encontrado.</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
         [HttpGet("/api/inmuebles/{id_inmueble}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Inmueble))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult getInmueblePorId(int id_inmueble)
         {
             try

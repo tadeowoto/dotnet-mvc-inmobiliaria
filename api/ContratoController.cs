@@ -19,6 +19,24 @@ namespace inmobiliaria.Api.Controllers
             this.contexto = context;
         }
 
+        /// <summary>
+        /// Obtiene todos los contratos de un inmueble específico.
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT.
+        /// Solo el propietario del inmueble puede ver esta información.
+        /// </remarks>
+        /// <param name="id_inmueble">El ID (int) del inmueble a consultar.</param>
+        /// <response code="200">Devuelve la lista de contratos (IEnumerable&lt;Contrato&gt;).</response>
+        /// <response code="401">No autorizado (Token JWT inválido o ausente).</response>
+        /// <response code="403">Acceso prohibido (El inmueble no pertenece al propietario).</response>
+        /// <response code="404">No se encontró el propietario, el inmueble, o contratos asociados.</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Contrato>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
         [HttpGet("/api/contratos/inmueble/{id_inmueble}")]
         public IActionResult getContratosPorInmueble(int id_inmueble)
@@ -54,6 +72,25 @@ namespace inmobiliaria.Api.Controllers
 
             }
         }
+
+        /// <summary>
+        /// Obtiene todos los pagos asociados a un contrato específico.
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT.
+        /// El propietario debe ser dueño del inmueble asociado al contrato.
+        /// </remarks>
+        /// <param name="id_contrato">El ID (int) del contrato a consultar.</param>
+        /// <response code="200">Devuelve la lista de pagos (IEnumerable&lt;Pago&gt;).</response>
+        /// <response code="401">No autorizado (Token JWT inválido o ausente).</response>
+        /// <response code="403">Acceso prohibido (El contrato no pertenece a un inmueble del propietario).</response>
+        /// <response code="404">No se encontró el propietario o el contrato.</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Pago>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
         [HttpGet("/api/pagos/contrato/{id_contrato}")]
         public IActionResult getPagosPorContrato(int id_contrato)

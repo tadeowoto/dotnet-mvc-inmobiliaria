@@ -1,4 +1,3 @@
-
 using inmobiliaria.Models;
 using Microsoft.AspNetCore.Mvc;
 using inmobiliaria.lib;
@@ -8,10 +7,12 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace inmobiliaria.Api.Controllers
 {
+    [ApiController]
     public class PropietariosController : ControllerBase
     {
 
@@ -28,8 +29,18 @@ namespace inmobiliaria.Api.Controllers
         }
 
 
-
+        /// <summary>
+        /// Inicia sesión para un propietario y genera un token JWT.
+        /// </summary>
+        /// <remarks>
+        /// Espera datos (email y password) enviados como form-data o x-www-form-urlencoded.
+        /// </remarks>
+        /// <param name="data">Objeto LoginData con email y password.</param>
+        /// <response code="200">Login exitoso. Devuelve el token JWT (string).</response>
+        /// <response code="400">Usuario o contraseña incorrectos, o excepción.</response>
         [HttpPost("api/Propietarios/login")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult Login([FromForm] LoginData data)
         {
             try
@@ -75,8 +86,24 @@ namespace inmobiliaria.Api.Controllers
 
         }
 
+        /// <summary>
+        /// Actualiza el perfil del propietario logueado.
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT. Espera datos como form-data.
+        /// El ID en los datos debe coincidir con el ID del token.
+        /// </remarks>
+        /// <param name="data">Objeto UpdateProfileData con los datos a modificar.</param>
+        /// <response code="200">Perfil actualizado correctamente (string).</response>
+        /// <response code="401">No autorizado (No tiene permisos o el ID no coincide).</response>
+        /// <response code="404">Propietario no encontrado.</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
         [HttpPut("api/Propietarios/updateProfile")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult UpdateProfile([FromForm] UpdateProfileData data)
         {
             try
@@ -108,8 +135,22 @@ namespace inmobiliaria.Api.Controllers
 
         }
 
+        /// <summary>
+        /// Cambia la contraseña del propietario logueado.
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT. Espera datos como form-data.
+        /// Valida que la contraseña antigua (OldPassword) sea correcta.
+        /// </remarks>
+        /// <param name="data">Objeto ChangePasswordData con OldPassword y NewPassword.</param>
+        /// <response code="200">Contraseña actualizada correctamente (string).</response>
+        /// <response code="400">La contraseña actual es incorrecta, o excepción.</response>
+        /// <response code="404">Propietario no encontrado.</response>
         [HttpPut("api/Propietarios/changePassword")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult ChangePassword([FromForm] ChangePasswordData data)
         {
             try
@@ -143,11 +184,23 @@ namespace inmobiliaria.Api.Controllers
         }
 
 
-
-
-
+        /// <summary>
+        /// Obtiene los datos del propietario actualmente logueado (desde el token).
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT.
+        /// Devuelve el objeto Propietario sin la contraseña.
+        /// </remarks>
+        /// <response code="200">Devuelve el objeto `Propietario` (sin password).</response>
+        /// <response code="401">No autorizado (Token JWT inválido o ausente).</response>
+        /// <response code="404">Propietario no encontrado.</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
         [HttpGet("api/Propietarios/logged")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Propietario))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult getPropietarioLogged()
         {
             try
@@ -175,8 +228,20 @@ namespace inmobiliaria.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene todos los inmuebles del propietario logueado.
+        /// </summary>
+        /// <remarks>
+        /// Requiere autenticación JWT.
+        /// </remarks>
+        /// <response code="200">Devuelve la lista de inmuebles (IEnumerable&lt;Inmueble&gt;).</response>
+        /// <response code="401">No autorizado (Token JWT inválido o ausente).</response>
+        /// <response code="400">Error en la solicitud (Excepción).</response>
         [HttpGet("/api/Propietarios/inmuebles")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Inmueble>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult getInmueblesPropietario()
         {
             try
@@ -195,11 +260,5 @@ namespace inmobiliaria.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
-
     }
-
-
-
 }
