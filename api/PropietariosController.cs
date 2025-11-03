@@ -88,6 +88,10 @@ namespace inmobiliaria.Api.Controllers
                 {
                     return NotFound("Propietario no encontrado");
                 }
+                if (propietario.id_propietario != data.id_propietario)
+                {
+                    return Unauthorized("No tiene permiso para actualizar este perfil");
+                }
                 propietario.nombre_propietario = data.nombre_propietario;
                 propietario.apellido_propietario = data.apellido_propietario;
                 propietario.email_propietario = data.email_propietario;

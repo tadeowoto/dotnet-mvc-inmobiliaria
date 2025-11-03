@@ -41,6 +41,11 @@ namespace inmobiliaria.Api.Controllers
                 var contratos = contexto.Contratos
                     .Where(c => c.idInmueble == id_inmueble)
                     .ToList();
+
+                if (contratos == null || contratos.Count == 0)
+                {
+                    return NotFound("No se encontraron contratos para el inmueble especificado.");
+                }
                 return Ok(contratos);
             }
             catch (Exception ex)

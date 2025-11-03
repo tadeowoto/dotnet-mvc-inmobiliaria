@@ -120,6 +120,7 @@ namespace inmobiliaria.Api.Controllers
                     // Guarda la ruta de acceso PÚBLICA
                     inmueble.foto_inmueble = "/uploads/inmuebles/" + fileName;
                 }
+                inmueble.disponibilidad_inmueble = false;
                 contexto.Inmuebles.Add(inmueble);
                 contexto.SaveChanges();
 
@@ -128,6 +129,36 @@ namespace inmobiliaria.Api.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message + " | InnerException: " + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpGet("/api/inmuebles/{id_inmueble}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult getInmueblePorId(int id_inmueble)
+        {
+            try
+            {
+
+                var iduser = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
+                var user = contexto.Propietarios.Find(iduser);
+                if (user == null)
+                {
+                    return NotFound("Propietario no encontrado");
+                }
+                var inmueble = contexto.Inmuebles.Find(id_inmueble);
+                if (inmueble == null)
+                {
+                    return NotFound("Inmueble no encontrado");
+                }
+                if (inmueble.PropietarioId != iduser)
+                {
+                    return Forbid("No tiene permisos para ver este inmueble.");
+                }
+                return Ok(inmueble);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 

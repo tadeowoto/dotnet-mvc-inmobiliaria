@@ -29,8 +29,10 @@ namespace inmobiliaria.Models
         [Column("id_inquilino")]
         public int idInquilino { get; set; }
         [NotMapped]
+        [JsonIgnore]
         public Inmueble? Inmueble { get; set; }
         [NotMapped]
+        [JsonIgnore]
         public Inquilino? Inquilino { get; set; }
 
         [Column("estado")]
