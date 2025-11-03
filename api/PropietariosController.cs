@@ -75,6 +75,35 @@ namespace inmobiliaria.Api.Controllers
 
         }
 
+        [HttpPut("api/Propietarios/updateProfile")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult UpdateProfile([FromForm] UpdateProfileData data)
+        {
+            try
+            {
+                //Busco el propietario logueado
+                var id = int.Parse(User.Claims.First(c => c.Type == "Id").Value);
+                var propietario = contexto.Propietarios.Find(id);
+                if (propietario == null)
+                {
+                    return NotFound("Propietario no encontrado");
+                }
+                propietario.nombre_propietario = data.nombre_propietario;
+                propietario.apellido_propietario = data.apellido_propietario;
+                propietario.email_propietario = data.email_propietario;
+                propietario.telefono_propietario = data.telefono_propietario;
+
+                contexto.Propietarios.Update(propietario);
+                contexto.SaveChanges();
+                return Ok("Perfil actualizado correctamente");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         [HttpPut("api/Propietarios/changePassword")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult ChangePassword([FromForm] ChangePasswordData data)
@@ -96,7 +125,6 @@ namespace inmobiliaria.Api.Controllers
                 }
                 //Si ya esta aca, es decir que la contraseña vieja es correcta
                 //Hasheo la nueva contraseña y la actualizo en la bd
-                Console.WriteLine("La contraseña actual es correcta");
                 String hashedNewPassword = service.HashPassword(data.NewPassword);
                 propietario.password_propietario = hashedNewPassword;
                 contexto.Propietarios.Update(propietario);
